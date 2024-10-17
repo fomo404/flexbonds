@@ -488,7 +488,7 @@ Code Example of releasing a secured NFT
 
 ### Q5: How is my passkey secured during transactions?
 
-**A:** The passkey is used to generate a public/private key pair locally. This key pair signs a nonce challenge from the vault, ensuring secure verification without exposing your passkey. This signature is then varified in our on-chain program to ensure it matches the keypair used during bonding. <b>Your passkey is never stored anywhere</b>, assuming you keep your passkey secure on your end. It is not possible have your passkey compromised.
+**A:** The passkey is used to generate a public/private key pair locally. This key pair signs a nonce challenge from the vault, ensuring secure verification without exposing your passkey. This signature is then varified in our on-chain program to ensure it matches the keypair used during bonding. <b>Your passkey is never stored anywhere</b>, assuming you keep your passkey secure on your end. It is not possible to have your passkey compromised.
 
 
 
