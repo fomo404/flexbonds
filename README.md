@@ -137,6 +137,7 @@ Integrate Flex Bonds into your project seamlessly.
 
 
 ```typescript
+
 import { Keypair, PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import { sha256 } from 'js-sha256';
@@ -192,6 +193,7 @@ export function deriveChallengeKeypair(passKey: string, nftMintAddress: PublicKe
 
 
 ```typescript
+
 Code Example of generating passkey keypair
 
   // Your passkey and NFT mint address
@@ -202,6 +204,7 @@ Code Example of generating passkey keypair
   const challengeKeypair = deriveChallengeKeypair(passKey, nftMintAddress);
   
   // Now you can use `challengeKeypair` to sign the challenge nonce
+
 ```
 
 ```typescript
@@ -248,7 +251,7 @@ Code Example of Bonding SOL
       publicKey: passkeyKeypair.publicKey,
       sysvarAccount: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
       systemProgram: anchor.web3.SystemProgram.programId,
-    }as any)
+    } as any)
     .instruction();
 
   const transaction = new Transaction();
@@ -260,7 +263,9 @@ Code Example of Bonding SOL
 ```
 
 ```typescript
+
 Code Example of Unbonding SOL
+
     //Derive the passkeyKeypair for bondAccountPDA derivation
     const passkeyKeypair = deriveChallengeKeypair(passkey,nftMintAddressPubkey);
 
@@ -313,9 +318,11 @@ Code Example of Unbonding SOL
             transaction.feePayer = wallet.publicKey!;
             transaction.add(ed25519Instruction);
             transaction.add(unBondSignatureIx);
+
 ```
 
 ```typescript
+
 Code Example of Bonding Tokens
 
     // Derive passKey Keypair
@@ -369,7 +376,7 @@ Code Example of Bonding Tokens
         systemProgram: anchor.web3.SystemProgram.programId,
         tokenProgram: tokenProgram, 
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-      }as any)
+      } as any)
       .instruction();
   
     const transaction = new Transaction();
@@ -381,7 +388,9 @@ Code Example of Bonding Tokens
 ```
 
 ```typescript
+
 Code Example of Unbonding Tokens
+
     // Derive passKey Keypair
     const passkeyKeypair = deriveChallengeKeypair(passkey, nftMintAddressPubkey);
   
@@ -437,17 +446,23 @@ Code Example of Unbonding Tokens
     transaction.feePayer = wallet.publicKey!;
     transaction.add(ed25519Instruction);
     transaction.add(ubondSigIx);
+
 ```
 
 ```typescript
+
 Code Example of securing a NFT
+
   Coming Soon
 
 ```
 
 ```typescript
+
 Code Example of releasing a secured NFT
+
   Coming Soon
+
 ```
 
 
