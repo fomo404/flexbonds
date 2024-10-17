@@ -137,7 +137,56 @@ Integrate Flex Bonds into your project seamlessly.
 
 
 ```typescript
-Generating passkey function 
+import { Keypair, PublicKey } from "@solana/web3.js";
+import nacl from "tweetnacl";
+import { sha256 } from 'js-sha256';
+
+/**
+ * Generates a valid ED25519 signature for a given message using the provided Keypair.
+ *
+ * @param message - The message to be signed as a Uint8Array.
+ * @param keypair - The Keypair used to sign the message.
+ * @returns The signature as a Uint8Array.
+ */
+export function generateValidSignature(
+    message: Uint8Array,
+    keypair: Keypair
+  ): Uint8Array {
+    const signature = nacl.sign.detached(message, keypair.secretKey);
+    return signature;
+  }
+
+
+  /**
+ * Derives a challenge Keypair from a passKey string and an NFT mint address PublicKey.
+ *
+ * @param passKey - A string representing the pass key.
+ * @param nftMintAddress - A PublicKey representing the NFT mint address.
+ * @returns A Keypair derived from the hashed combination of passKey and nftMintAddress.
+ */
+export function deriveChallengeKeypair(passKey: string, nftMintAddress: PublicKey): Keypair {
+
+    // Step 1: Convert passKey to a Uint8Array (UTF-8 encoding)
+    const passKeyBytes = new TextEncoder().encode(passKey);
+  
+    // Step 2: Get the bytes of the nftMintAddress PublicKey
+    const nftMintAddressBytes = nftMintAddress.toBytes(); // Uint8Array of length 32
+  
+    // Step 3: Concatenate passKeyBytes and nftMintAddressBytes
+    const combinedBytes = new Uint8Array(passKeyBytes.length + nftMintAddressBytes.length);
+    combinedBytes.set(passKeyBytes);
+    combinedBytes.set(nftMintAddressBytes, passKeyBytes.length);
+  
+    // Step 4: Hash the combined bytes using SHA-256 to get a 32-byte seed
+    const hashHex = sha256(combinedBytes); // Returns a hex string
+    const hashBytes = Uint8Array.from(Buffer.from(hashHex, 'hex')); // Convert hex string to Uint8Array
+  
+    // Step 5: Create a Keypair from the 32-byte seed
+    const challengeKeypair = Keypair.fromSeed(hashBytes);
+  
+    return challengeKeypair;
+  }
+
 
 ```
 
