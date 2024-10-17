@@ -131,7 +131,7 @@ With **Flex Bonds**, your NFTs become more than just digital collectibles—they
 Integrate Flex Bonds into your project seamlessly.
 
 - **IDL Files**: Available in the `idl/` directory for program interfacing.
-- **Type Definitions**: TypeScript definitions provided for robust development.
+- **Type Definitions**: TypeScript definitions are provided in `types/`.
 
 ### Useful Snippets
 
