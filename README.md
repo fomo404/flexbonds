@@ -192,47 +192,262 @@ export function deriveChallengeKeypair(passKey: string, nftMintAddress: PublicKe
 
 
 ```typescript
-import { PublicKey } from '@solana/web3.js';
-import { deriveChallengeKeypair } from 'flex-bonds-sdk';
+Code Example of generating passkey keypair
 
-// Your passkey and NFT mint address
-const passKey = 'your-secure-passkey';
-const nftMintAddress = new PublicKey('Your NFT Mint Address');
-
-// Generate the challenge Keypair
-const challengeKeypair = deriveChallengeKeypair(passKey, nftMintAddress);
-
-// Now you can use `challengeKeypair` to sign the challenge nonce
+  // Your passkey and NFT mint address
+  const passKey = 'your-secure-passkey';
+  const nftMintAddress = new PublicKey('Your NFT Mint Address');
+  
+  // Generate the challenge Keypair
+  const challengeKeypair = deriveChallengeKeypair(passKey, nftMintAddress);
+  
+  // Now you can use `challengeKeypair` to sign the challenge nonce
 ```
 
 ```typescript
+
 Code Example of Bonding SOL
+
+  // Derive passKeyKeyPair for deriving account keys
+  const passkeyKeypair = deriveChallengeKeypair(passKey, nftMintAddress);
+
+  // Fetch PDAs for bondAccount and bondVault
+  const bondAccountPDA = await findPDA([Buffer.from("bond"), passkeyKeypair.publicKey.toBuffer()], program.programId);
+  const bondVaultPDA = await findPDA([Buffer.from("bond_vault"), bondAccountPDA.toBuffer()], program.programId);
+
+  // Fetch nonce
+  let nonce = await getBondNonce(program, bondAccountPDA);
+
+  // Message generation
+  const message = Uint8Array.from(nonce.toArray("le", 8));
+
+  // Generate signature
+  const signature = generateValidSignature(message, passkeyKeypair);
+  const signatureArray = Array.from(signature);
+
+  const latestBlockhash = await connection.getLatestBlockhash();
+  const solAmountLamports = bondAmount * LAMPORTS_PER_SOL;
+
+  // Compute SHA-256 hash
+  const nftMintAddressBuffer = nftMintAddress.toBuffer();
+  const hash = await crypto.subtle.digest("SHA-256", nftMintAddressBuffer);
+  const nftHashUint8Array = new Uint8Array(hash);
+  const nftHashArray = Array.from(nftHashUint8Array);
+
+  const ed25519Instruction = Ed25519Program.createInstructionWithPrivateKey({
+    message,
+    privateKey: passkeyKeypair.secretKey.slice(0, 64),
+  });
+
+  const bondSignatureIx = await program.methods
+    .createSolBond(signatureArray, new anchor.BN(solAmountLamports), nftHashArray)
+    .accounts({
+      bondAccount: bondAccountPDA,
+      bondVault: bondVaultPDA,
+      user: wallet.publicKey!,
+      publicKey: passkeyKeypair.publicKey,
+      sysvarAccount: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+      systemProgram: anchor.web3.SystemProgram.programId,
+    }as any)
+    .instruction();
+
+  const transaction = new Transaction();
+  transaction.recentBlockhash = latestBlockhash.blockhash;
+  transaction.feePayer = wallet.publicKey!;
+  transaction.add(ed25519Instruction);
+  transaction.add(bondSignatureIx);
 
 ```
 
 ```typescript
 Code Example of Unbonding SOL
+    //Derive the passkeyKeypair for bondAccountPDA derivation
+    const passkeyKeypair = deriveChallengeKeypair(passkey,nftMintAddressPubkey);
 
+    //Bond account
+    const bondAccountPDA = findPDA([Buffer.from("bond"), passkeyKeypair.publicKey.toBuffer()], program.programId);
+
+    // Bond vault
+    const bondVaultPDA = findPDA([Buffer.from("bond_vault"), bondAccountPDA.toBuffer()], program.programId);
+
+    const feeAccountPDA = findPDA([Buffer.from("fee_account")], program.programId);
+
+    // Fetch nonce
+    let nonce = await getBondNonce(program, bondAccountPDA);
+
+   // Create the message (current nonce as 8-byte little-endian)
+   const message = Uint8Array.from(nonce.toArray("le", 8));
+  
+   // Generate a valid signature using the challenge Keypair
+   const signature = generateValidSignature(message, passkeyKeypair);
+
+   // Convert Uint8Array to number[]
+   const signatureArray = Array.from(signature);
+  
+   const ed25519Instruction = Ed25519Program.createInstructionWithPrivateKey({
+     // The message to be signed
+     message: message,
+     // The private key as a Buffer (64 bytes for Ed25519)
+     privateKey: passkeyKeypair.secretKey.slice(0, 64),
+   });
+
+    const latestBlockhash = await connection.getLatestBlockhash();
+
+    const unBondSignatureIx = await program.methods
+      .unbondSol(signatureArray)
+      .accounts({
+        bondAccount: bondAccountPDA, 
+        bondVault: bondVaultPDA,
+        nftTokenAccount: nftTokenAccountPubkey,
+        nftMintAddress: nftMintAddressPubkey,
+        feeRecipient: feeAccountPDA,  
+        user: wallet.publicKey!,
+        publicKey: passkeyKeypair.publicKey,
+        sysvarAccount: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      } as any)
+      .instruction();
+  
+      const transaction = new Transaction();
+            transaction.recentBlockhash = latestBlockhash.blockhash;
+            transaction.feePayer = wallet.publicKey!;
+            transaction.add(ed25519Instruction);
+            transaction.add(unBondSignatureIx);
 ```
 
 ```typescript
 Code Example of Bonding Tokens
 
+    // Derive passKey Keypair
+    const passkeyKeypair = deriveChallengeKeypair(passKey, nftMintAddress);
+  
+    // Fetch PDAs for bondAccount and tokenVault
+    const bondAccountPDA = findPDA([Buffer.from("bond"), passkeyKeypair.publicKey.toBuffer()], program.programId);
+    const tokenVaultPDA = findPDA([Buffer.from("token_vault"), bondAccountPDA.toBuffer()], program.programId);
+  
+    // Fetch associated token accounts (ATA)
+    const userTokenAta = await findAssociatedTokenAddress(wallet.publicKey!, tokenMintAddress, tokenProgram);
+    const tokenVaultAta = await findAssociatedTokenAddress(tokenVaultPDA, tokenMintAddress, tokenProgram);
+
+    // Fetch nonce
+    let nonce = await getBondNonce(program, bondAccountPDA);
+  
+    // Message generation
+    const message = Uint8Array.from(nonce.toArray("le", 8));
+  
+    // Generate signature
+    const signature = generateValidSignature(message, passkeyKeypair);
+    const signatureArray = Array.from(signature);
+  
+    const latestBlockhash = await connection.getLatestBlockhash();
+
+    const decimals = await getTokenDecimals(tokenMintAddress, connection);
+    const tokenAmountToSend = bondAmount * Math.pow(10, decimals);
+
+    // Compute SHA-256 hash
+    const nftMintAddressBuffer = nftMintAddress.toBuffer();
+    const hash = await crypto.subtle.digest("SHA-256", nftMintAddressBuffer);
+    const nftHashUint8Array = new Uint8Array(hash);
+    const nftHashArray = Array.from(nftHashUint8Array);
+  
+    const ed25519Instruction = Ed25519Program.createInstructionWithPrivateKey({
+      message,
+      privateKey: passkeyKeypair.secretKey.slice(0, 64),
+    });
+  
+    const bondSignatureIx = await program.methods
+      .createTokenBond(signatureArray, new anchor.BN(tokenAmountToSend), nftHashArray)
+      .accounts({
+        bondAccount: bondAccountPDA,
+        tokenVault: tokenVaultPDA,
+        userTokenAta: userTokenAta,
+        tokenMint: tokenMintAddress,
+        tokenVaultAta: tokenVaultAta,
+        user: wallet.publicKey!, 
+        publicKey: passkeyKeypair.publicKey,
+        sysvarAccount: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        tokenProgram: tokenProgram, 
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      }as any)
+      .instruction();
+  
+    const transaction = new Transaction();
+    transaction.recentBlockhash = latestBlockhash.blockhash;
+    transaction.feePayer = wallet.publicKey!;
+    transaction.add(ed25519Instruction);
+    transaction.add(bondSignatureIx);
+
 ```
 
 ```typescript
 Code Example of Unbonding Tokens
+    // Derive passKey Keypair
+    const passkeyKeypair = deriveChallengeKeypair(passkey, nftMintAddressPubkey);
+  
+    // Fetch PDAs for bondAccount and tokenVault
+    const bondAccountPDA = findPDA([Buffer.from("bond"), passkeyKeypair.publicKey.toBuffer()], program.programId);
+    const tokenVaultPDA = findPDA([Buffer.from("token_vault"), bondAccountPDA.toBuffer()], program.programId);
+    const feeAccountPDA = findPDA([Buffer.from("fee_account")], program.programId);
+    
+    // Fetch associated token accounts (ATA)
+    const userTokenAccount = await findAssociatedTokenAddress(wallet.publicKey!, tokenMintAddressPubkey, tokenProgramPubkey);
+    
+    const tokenVaultAta = await findAssociatedTokenAddress(tokenVaultPDA, tokenMintAddressPubkey, tokenProgramPubkey);
 
+    const feeRecipientAta = await findAssociatedTokenAddress(feeAccountPDA, tokenMintAddressPubkey, tokenProgramPubkey);
+
+    // Fetch nonce
+    let nonce = await getBondNonce(program, bondAccountPDA);
+  
+    // Message generation
+    const message = Uint8Array.from(nonce.toArray("le", 8));
+  
+    // Generate signature
+    const signature = generateValidSignature(message, passkeyKeypair);
+    const signatureArray = Array.from(signature);
+  
+    const latestBlockhash = await connection.getLatestBlockhash();
+   
+    const ed25519Instruction = Ed25519Program.createInstructionWithPrivateKey({
+      message,
+      privateKey: passkeyKeypair.secretKey.slice(0, 64),
+    });
+
+    const ubondSigIx = await program.methods.unbondTokens(signatureArray).accounts({
+        bondAccount: bondAccountPDA,
+        tokenVault: tokenVaultPDA,
+        publicKey: passkeyKeypair.publicKey,
+        user: wallet.publicKey!,
+        userTokenAta: userTokenAccount,
+        tokenMint: tokenMintAddressPubkey,
+        tokenVaultAta: tokenVaultAta,
+        nftMintAddress: nftMintAddressPubkey,
+        nftTokenAccount: nftTokenAccountPubkey,
+        tokenProgram: tokenProgramPubkey,
+        feeRecipient: feeAccountPDA,
+        feeRecipientAta: feeRecipientAta,
+        sysvarAccount: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: anchor.web3.SystemProgram.programId,
+    } as any).instruction();
+
+    const transaction = new Transaction();
+    transaction.recentBlockhash = latestBlockhash.blockhash;
+    transaction.feePayer = wallet.publicKey!;
+    transaction.add(ed25519Instruction);
+    transaction.add(ubondSigIx);
 ```
 
 ```typescript
 Code Example of securing a NFT
+  Coming Soon
 
 ```
 
 ```typescript
 Code Example of releasing a secured NFT
-
+  Coming Soon
 ```
 
 
