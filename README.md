@@ -1,6 +1,6 @@
-# Flex Bonds: Transform Your NFTs into Secure Digital Safes 🔐
+# Flex Bonds: Transform Your NFTs Into Secure Digital Safes 🔐
 
-Welcome to **Flex Bonds**, the revolutionary platform that turns your NFTs into private digital safes. Protect your assets, enhance your NFT's value, and enjoy unparalleled security—all within a fully decentralized, on-chain and private solution.
+Welcome to **Flex Bonds**, the revolutionary platform that turns your NFTs into private digital safes. Protect your assets, enhance your NFT's value, and enjoy unparalleled security — all within a fully decentralized, on-chain, private solution.
 
 ---
 
@@ -28,7 +28,7 @@ Welcome to **Flex Bonds**, the revolutionary platform that turns your NFTs into 
 
 **Thought your NFTs are just art? Think again!**
 
-With **Flex Bonds**, your NFTs become more than just digital collectibles—they transform into private safes for your SOL and tokens. Bond your assets to any NFT, add a passkey, and you've got a secret vault known only to you.
+With **Flex Bonds**, your NFTs become more than just digital collectibles — they transform into private safes for your SOL and tokens. Bond your assets to any NFT, add a passkey, and you've got a secret vault known only to you.
 
 - **Invisible Holdings**: Keep your exact asset holdings unknown to prying eyes, hackers, and wallet drainers.
 - **Enhanced Security**: Secure your NFTs and bonded assets, making unauthorized transfers impossible.
@@ -40,13 +40,13 @@ With **Flex Bonds**, your NFTs become more than just digital collectibles—they
 
 ## Key Features
 
-- **Asset Bonding**: Bond SOL or any SPL Token (including Token2022) to any NFT—yours or someone else's.
+- **Asset Bonding**: Bond SOL or any SPL Token (including Token2022) to any NFT — yours or someone else's.
 - **Passkey Protection**: Secure your bonded assets with a passkey known only to you.
 - **On-Chain Solution**: 100% decentralized with no off-chain storage or databases.
 - **Secure NFTs**: Lock your NFTs to your wallet using our Secure NFT feature.
 - **Fren Bonding**: Bond assets to third-party NFTs for gifts, giveaways, or rewards.
-- **Developer-Friendly**: Integrate Flex Bonds into your projects with our IDL and type definitions.
-- **Cost-Effective**: Bonding, securing, and releasing NFTs are free; unbonding incurs a modest 3.33% fee.
+- **Developer-Friendly**: Integrate Flex Bonds into your projects with our IDL and type definitions and code snippets.
+- **Cost-Effective**: Bonding, securing, and releasing NFTs is free; unbonding incurs a modest 3.33% fee.
 
 ---
 
@@ -54,9 +54,9 @@ With **Flex Bonds**, your NFTs become more than just digital collectibles—they
 
 ### Bonding Assets
 
-1. **Select an NFT**: Choose any NFT—yours or someone else's.
+1. **Select an NFT**: Choose any NFT — yours or someone else's.
 2. **Set a Passkey**: Create a secure passkey. This passkey is never stored on-chain or off-chain.
-3. **Bond Assets**: Bond SOL or tokens to the NFT. The assets are stored securely in a vault associated with the NFT.
+3. **Bond Assets**: Bond SOL or tokens to the NFT. Yout assets are now stored securely in a vault associated with the NFT.
 
 ### Passkey Mechanism
 
@@ -93,7 +93,7 @@ With **Flex Bonds**, your NFTs become more than just digital collectibles—they
 
 - **Passkey Safety**: Your passkey is crucial. **Do not share it** or lose it. Without it, unbonding assets is impossible.
 - **Private Key Management**: Keep your wallet's private keys secure.
-- **Transaction Verification**: Always double-check transaction details before approving them in your wallet.
+- **Transaction Verification**: Always double-check transaction details, before approving them in your wallet.
 
 ### Steps
 
@@ -112,7 +112,7 @@ With **Flex Bonds**, your NFTs become more than just digital collectibles—they
 
 - Use the **Secure NFT** feature to lock your NFT to your wallet, preventing unauthorized transfers.
 1. **Select an NFT**: Choose the NFT you wish to secure.
-2. **Create Passkey**: Set a secure passkey (Again, store this securely. Don't lose it).
+2. **Create Passkey**: Set a secure passkey. (Again, store this securely. Don't lose it).
 4. **Confirm Transaction**: Approve the transaction in your wallet. 
 
 
@@ -476,11 +476,11 @@ Code Example of releasing a secured NFT
 
 ### Q2: Are there any fees involved?
 
-**A:** Bonding, securing, and releasing NFTs are **free**. Unbonding assets incurs a modest **3.33% fee**.
+**A:** Bonding, securing, and releasing NFTs is **free**. Unbonding assets incurs a modest **3.33% fee**.
 
 ### Q3: Can I bond assets to someone else's NFT?
 
-**A:** Absolutely! With the **Fren Bond** feature, you can bond SOL or tokens to third-party NFTs—perfect for gifts, giveaways, and more.
+**A:** Absolutely! With the **Fren Bond** feature, you can bond SOL or tokens to third-party NFTs — perfect for gifts, giveaways, and more.
 
 ### Q4: Is Flex Bonds compatible with all tokens?
 
@@ -488,7 +488,7 @@ Code Example of releasing a secured NFT
 
 ### Q5: How is my passkey secured during transactions?
 
-**A:** The passkey is used to generate a public/private key pair locally. This key pair signs a nonce challenge from the vault, ensuring secure verification without exposing your passkey. This signature is then varified in our on-chain program to ensure it matches the keypair used during bonding. <b>Your passkey is never stored anywhere</b>, assuming you keep your passkey secure on your end. It is not possible to have your passkey compromised.
+**A:** The passkey is used to generate a public/private key pair locally. This key pair signs a nonce challenge from the vault, ensuring secure verification without exposing your passkey. This signature is then varified in our on-chain program to ensure it matches the keypair used during bonding. <b>Your passkey is never stored anywhere</b>, assuming you keep your passkey secure on your end, it is not possible to have your passkey compromised.
 
 
 
